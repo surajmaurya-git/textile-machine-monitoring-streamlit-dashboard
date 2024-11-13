@@ -108,8 +108,10 @@ def drawDashboard():
         st.rerun()
     st.markdown("This dashboard provides real-time insight of TFO Twisting Machine.")
 
-
+    # =================== Parameters Section ===================
     parameters_section()
+
+    # =================== Section Wise Spindle Status Section ===================
     sectionWiseSpindleStatus_section()
 
 
