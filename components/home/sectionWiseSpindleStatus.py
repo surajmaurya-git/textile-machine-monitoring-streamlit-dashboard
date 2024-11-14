@@ -8,18 +8,23 @@ def sectionWiseSpindleStatus_section():
         with org_subheading[0]:
             st.subheader(body="Section Wise Spindle Status", anchor=False)
 
+        spindle_health_status=st.session_state.spindle_health_status
+        if spindle_health_status is None:
+            
+            st.stop()
         # Create the DataFrame
-        d = {'Section Running Status': ["70%", "50%"],
-            'Spindle -1': ["Healthy", "Faulty"],
-            'Spindle -2': ["Healthy", "Healthy"],
-            'Spindle -3': ["Healthy", "Healthy"],
-            'Spindle -4': ["Faulty", "Faulty"],
-            'Spindle -5': ["Faulty", "Faulty"],
-            'Spindle -6': ["Healthy", "Faulty"],
-            'Spindle -7': ["Healthy", "Faulty"],
-            'Spindle -8': ["Healthy", "Faulty"],
-            'Spindle -9': ["Healthy", "Faulty"],
-            'Spindle -10': ["Faulty", "Faulty"]
+        d = {'Section Running Status': [st.session_state.slave_1_spindles_running_status_percentage, st.session_state.slave_2_spindles_running_status_percentage],
+            'Spindle -1': [spindle_health_status[0][0], spindle_health_status[1][0]],
+            'Spindle -2': [spindle_health_status[0][1], spindle_health_status[1][1]],
+            'Spindle -3': [spindle_health_status[0][2], spindle_health_status[1][2]],
+            'Spindle -4': [spindle_health_status[0][3], spindle_health_status[1][3]],
+            'Spindle -5': [spindle_health_status[0][4], spindle_health_status[1][4]],
+            'Spindle -6': [spindle_health_status[0][5], spindle_health_status[1][5]],
+            'Spindle -7': [spindle_health_status[0][6], spindle_health_status[1][6]],
+            'Spindle -8': [spindle_health_status[0][7], spindle_health_status[1][7]],
+            'Spindle -9': [spindle_health_status[0][8], spindle_health_status[1][8]],
+            'Spindle -10': [spindle_health_status[0][9], spindle_health_status[1][9]],
+            'Spindle -11': [spindle_health_status[0][10], spindle_health_status[1][10]]
             }
 
         df = pd.DataFrame(data=d, index=["Section-1", "Section-2"])
@@ -30,6 +35,7 @@ def sectionWiseSpindleStatus_section():
                 return 'background-color:  #00CC00'
             elif val == "Faulty":
                 return 'background-color: #E33025'
+            
             return ''  # For cells that don't match
 
         # Apply styling to the Spindle columns (ignoring 'Section Running Status')

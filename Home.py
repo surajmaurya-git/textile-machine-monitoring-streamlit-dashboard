@@ -6,10 +6,6 @@ from datetime import date, datetime, timedelta, time
 from streamlit_autorefresh import st_autorefresh
 
 from utils.anedya import anedya_config
-from utils.anedya import anedya_getValue
-from utils.anedya import anedya_setValue
-from utils.anedya import fetchHumidityData
-from utils.anedya import fetchTemperatureData
 from utils.anedya import anedya_get_latestData
 from utils.anedya import anedya_getDeviceStatus
 
@@ -39,9 +35,6 @@ def main():
         drawLogin()
     else:
         success = anedya_config(API_KEY=API_KEY,NODE_ID=NODE_ID)
-        # API_KEY=st.secrets.anedya_connection_credentials.API_KEY
-        # NODE_ID=st.secrets.anedya_connection_credentials.NODE_ID
-        # success = anedya_config(API_KEY=API_KEY,NODE_ID=NODE_ID)
         if not success:
             st.stop()
         else:
@@ -79,22 +72,44 @@ def drawDashboard():
             st.session_state.device_status = "Offline"
 
     # ============ Update Parameters ===============
-    data=anedya_get_latestData("SPRPMNM")
-    st.session_state.nominal_spindle_speed= data[0]
+    data=anedya_get_latestData("SPRPMNM",st.session_state.Plant,st.session_state.Machine)
+    if not data[0]:
+        st.session_state.show_parameters_section = False
+    else:
+        st.session_state.nominal_spindle_speed= data[0]
+        st.session_state.show_parameters_section = True
 
-    data=anedya_get_latestData("SPRPMAC")
-    st.session_state.actual_spindle_speed= data[0]
+    data=anedya_get_latestData("SPRPMAC",st.session_state.Plant,st.session_state.Machine)
+    if data[0]:
+        st.session_state.actual_spindle_speed= data[0]
+        st.session_state.show_parameters_section = True
+    else:
+       st.session_state.show_parameters_section = False
 
-    data=anedya_get_latestData("TPI")
-    st.session_state.twist_per_inch= data[0]
+    data=anedya_get_latestData("TPI",st.session_state.Plant,st.session_state.Machine)
+    if data[0]:
+        st.session_state.twist_per_inch= data[0]
+        st.session_state.show_parameters_section = True
+    else:
+        st.session_state.show_parameters_section = False
 
-    data=anedya_get_latestData("DLRPMNM")
-    st.session_state.nominal_delivery_speed = data[0]
+    data=anedya_get_latestData("DLRPMNM",st.session_state.Plant,st.session_state.Machine)
+    if data[0]:
+        st.session_state.nominal_delivery_speed = data[0]
+        st.session_state.show_parameters_section = True
+    else:
+        st.session_state.show_parameters_section = False
 
-    data=anedya_get_latestData("DLRPMAC")
-    st.session_state.actual_delivery_speed = data[0]
+    data=anedya_get_latestData("DLRPMAC",st.session_state.Plant,st.session_state.Machine)
+    if data[0]:
+        st.session_state.actual_delivery_speed = data[0]
+        st.session_state.show_parameters_section = True
+    else:
+        st.session_state.show_parameters_section = False
 
-    st.session_state.total_spindle_running_status = 9
+    spindle_run_status = spindle_running_status(st.session_state.Plant,st.session_state.Machine)
+
+    st.session_state.total_spindle_running_status = spindle_run_status[0]
     
     # Convert epoch time to datetime
     epoch_time =data[1]
@@ -108,7 +123,9 @@ def drawDashboard():
     with headercols[1]:
         st.button(label=st.session_state.device_status)
     with headercols[2]:
-        st.button("Refresh")
+        on=st.button("Refresh")
+        if on:
+            st.rerun()
     with headercols[3]:
         logout = st.button("Logout")
 
@@ -127,21 +144,30 @@ def drawDashboard():
             label="Select Plants",
             placeholder="Select Plant",
             options=["Plant-1"],
-            index=0,
+            index=st.session_state.plant_selectbox_index,
+            key="plants"
         )
         if st.session_state.Plant != Plant:
             st.session_state.Plant = Plant
+            index=int(Plant.split("-")[1])
+            st.session_state.spindle_health_status=None
+            st.session_state.plant_selectbox_index=index-1
             st.rerun()
     # Column 2
     with param_selection_cols1[1]:
         Machine = st.selectbox(
             label="Select Machine",
-            options=["Machine-1"],
-            index=0,
+            options=["Machine-1","Machine-2"],
+            key="machines",
+            index=st.session_state.machine_selectbox_index,           
             placeholder="Select Machine",
         )
+        # st.write(Machine)
         if st.session_state.Machine !=Machine :
             st.session_state.Machine = Machine
+            index=int(Machine.split("-")[1])
+            st.session_state.machine_selectbox_index=index-1
+            st.session_state.spindle_health_status=None
             st.rerun()
     # with param_selection_cols1[3]:
     #     show_charts = st.toggle(
@@ -158,116 +184,38 @@ def drawDashboard():
     sectionWiseSpindleStatus_section()
 
 
-@st.cache_data(ttl=4, show_spinner=False)
-def GetFanStatus() -> list:
-    value = anedya_getValue("Fan")
-    if value[1] == 1:
-        on = value[0]
-        if on:
-            st.session_state.FanState = True
-            st.session_state.FanButtonText = "Turn Fan Off!"
-        else:
-            st.session_state.FanState = False
-            st.session_state.FanButtonText = "Turn Fan On!"
-    return value
-
-
-@st.cache_data(ttl=4, show_spinner=False)
-def GetLightStatus() -> list:
-    value = anedya_getValue("Light")
-    if value[1] == 1:
-        on = value[0]
-        if on:
-            st.session_state.LightState = True
-            st.session_state.LightButtonText = "Turn Light Off!"
-        else:
-            st.session_state.LightState = False
-            st.session_state.LightButtonText = "Turn Light On!"
-    return value
-
-
-def auto_update_time_range(param_hold_or_start: bool = True):
-    # st.session_state.counter=st.session_state.counter+1
-    # st.write(st.session_state.counter)
-    if param_hold_or_start:
-        st.session_state.var_auto_update_time_range = True
-    else:
-        st.session_state.var_auto_update_time_range = False
-
-
-def is_within_tolerance(time1, time2, tolerance=timedelta(seconds=60)):
-    datetime1 = datetime.combine(date.min, time1)
-    datetime2 = datetime.combine(date.min, time2)
-    return abs((datetime1 - datetime2).total_seconds()) <= tolerance.total_seconds()
-
-
-def get_default_time_range():
-
-    # Get the current date and time in the Indian time zone
-    indian_time_zone = pytz.timezone("Asia/Kolkata")
-    current_date = datetime.now(indian_time_zone)
-
-    # Extract the year, month, and day
-    current_year = current_date.year
-    current_month = current_date.month
-    current_day = current_date.day
-    # Create a date object
-    current_date_object = date(current_year, current_month, current_day)
-    # st.session_state.to_date = current_date_object
-
-    # Extract the hour and minute
-    hour = current_date.hour
-    minute = current_date.minute
-    # Create a time object
-    current_time_object = time(hour, minute)
-    # Assuming `st` is your Streamlit session state
-    # st.session_state.to_time = current_time_object
-
-    # Extract the year, month, and day
-    reset_date = current_date - timedelta(hours=3.8)
-    hour = reset_date.hour
-    minute = reset_date.minute
-    # Create a date object
-    from_time_object = time(hour, minute)
-    # st.session_state.from_time = from_time_object
-
-    # Subtract one day to get yesterday's date
-    yesterday_date = current_date - timedelta(days=1)
-    # Extract the year, month, and day
-    yesterday_year = yesterday_date.year
-    yesterday_month = yesterday_date.month
-    yesterday_day = yesterday_date.day
-    # Create a date object for yesterday
-    yesterday_date_object = date(yesterday_year, yesterday_month, yesterday_day)
-    # st.session_state.from_date = yesterday_date_object
-
-    return [
-        current_date_object,
-        current_time_object,
-        yesterday_date_object,
-        from_time_object,
+@st.cache_data(ttl=1, show_spinner=False)
+def spindle_running_status(Plant=None,Machine=None) -> list:
+    # Retrieve data for Slave 1
+    slave_1_data_list = [anedya_get_latestData(f"S1DI{i}",st.session_state.Plant,st.session_state.Machine)[0] for i in range(1, 12)]
+    slave_1_assign_health_status_list = [
+        "Healthy" if x == 1 else "Faulty" if x == 0 else "No Data" 
+        for x in slave_1_data_list
     ]
+    
+    # Calculate Slave 1 spindle running status
+    slave_1_spindle_running_status = sum(1 for x in slave_1_data_list if x == 1)
+    slave_1_total_spindles = len(slave_1_data_list)-1
+    st.session_state.slave_1_spindles_running_status_percentage = f"{(slave_1_spindle_running_status / slave_1_total_spindles) * 100:.2f}%"
 
+    # Retrieve data for Slave 2
+    slave_2_data_list = [anedya_get_latestData(f"S2DI{i}",st.session_state.Plant,st.session_state.Machine)[0] for i in range(1, 12)]
+    slave_2_assign_health_status_list = [
+        "Healthy" if x == 1 else "Faulty" if x == 0 else "No Data" 
+        for x in slave_2_data_list
+    ]
+    
+    # Calculate Slave 2 spindle running status
+    slave_2_spindle_running_status = sum(1 for x in slave_2_data_list if x == 1)
+    slave_2_total_spindles = len(slave_2_data_list)-1
+    st.session_state.slave_2_spindles_running_status_percentage = f"{(slave_2_spindle_running_status / slave_2_total_spindles) * 100:.2f}%"
 
-def reset_time_range():
+    # Total spindle running status
+    total_spindles_running_status = slave_1_spindle_running_status + slave_2_spindle_running_status
+    
+    st.session_state.spindle_health_status = [slave_1_assign_health_status_list,slave_2_assign_health_status_list]
 
-    default_time_range = get_default_time_range()
-
-    st.session_state.to_date = default_time_range[0]
-    st.session_state.to_time = default_time_range[1]
-    st.session_state.from_date = default_time_range[2]
-    st.session_state.from_time = default_time_range[3]
-    # st.write(st.session_state.to_date, st.session_state.to_time, st.session_state.from_date, st.session_state.from_time)
-    # st.rerun()
-
-
-st.cache_data(ttl=10, show_spinner=False)
-
-
-def update_time_range():
-    st.session_state.var_auto_update_time_range = True
-    reset_time_range()
-    return 0
+    return [total_spindles_running_status]
 
 
 if __name__ == "__main__":
