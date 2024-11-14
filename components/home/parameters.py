@@ -11,41 +11,6 @@ def parameters_section():
         with org_subheading[1]:
             st.write(st.session_state.last_updated_parameters_timestamps)
 
-        # -------------------Parameters Selection section -------------------------------------
-        param_selection_cols1 = st.columns(
-            [1, 1, 1, 0.5], gap="medium", vertical_alignment="center"
-        )
-        # Column 1
-        with param_selection_cols1[0]:
-            projects = st.selectbox(
-                label="Select Plants",
-                placeholder="Select Plant",
-                options=["Plant 1"],
-                index=0,
-            )
-            Project = projects.split()
-            if st.session_state.Project != (int(Project[1]) - 1):
-                st.session_state.Project = int(Project[1]) - 1
-                st.rerun()
-        # Column 2
-        with param_selection_cols1[1]:
-            machines = st.selectbox(
-                label="Select Machine",
-                options=["Machine 1", "Machine 2"],
-                index=0,
-                placeholder="Select Machine",
-            )
-            machine = machines.split()
-            if st.session_state.Node != int(machine[1]):
-                st.session_state.Node = int(machine[1])
-                st.rerun()
-        # with param_selection_cols1[3]:
-        #     show_charts = st.toggle(
-        #         label="Show Charts",
-        #         key="show_charts",
-        #         value=st.session_state.show_charts,
-        #         label_visibility="visible",
-        #     )
 
         # -------------------Parameters Gauge section -------------------------------------
         cols1 = st.columns([1, 1, 1], gap="medium", vertical_alignment="center")
@@ -55,13 +20,13 @@ def parameters_section():
                 gTitle="Nominal Spindle Speed",
                 gMode="gauge+number",
                 gSize="MED",
-                grLow=30,
+                grLow=4,
                 gcLow="blue",
-                grMid=60,
+                grMid=9,
                 gcMid="green",
                 gcHigh="red",
                 arBot=0,
-                arTop=100,
+                arTop=12,
                 sFix="RPM",
             )
         with cols1[1]:
