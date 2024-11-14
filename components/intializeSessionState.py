@@ -6,16 +6,22 @@ def initializeSessionState():
         st.session_state.LoggedIn = False
 
     # Initialize the Project setting in state if does not exist
+    if "plant_selectbox_index" not in st.session_state:
+        st.session_state.plant_selectbox_index = 0
     if "Plant" not in st.session_state:
         st.session_state.Plant = "Plant-1"
 
     # Initialize the Node setting in state if does not exist
+    if "machine_selectbox_index" not in st.session_state:
+        st.session_state.machine_selectbox_index = 0
     if "Machine" not in st.session_state:
         st.session_state.Machine = "Machine-1"
 
     # helper variable
     if "counter" not in st.session_state:
         st.session_state.counter = 0
+    if "clear_cache" not in st.session_state:
+        st.session_state.clear_cache=False
 
     # Store Device Status
     if "device_status" not in st.session_state:
@@ -49,3 +55,25 @@ def initializeSessionState():
 
     if "total_spindle_running_status" not in st.session_state:
         st.session_state.total_spindle_running_status = 0
+    
+    # Spindle Running Status
+    if "slave_1_spindles_running_status_percentage" not in st.session_state:
+        st.session_state.slave_1_spindles_running_status_percentage = ""
+
+    if "slave_2_spindles_running_status_percentage" not in st.session_state:
+        st.session_state.slave_2_spindles_running_status_percentage = ""
+
+    if "spindle_health_status" not in st.session_state:
+        st.session_state.spindle_health_status = []
+
+
+
+    # *************** Settings ********************************
+
+    if "show_parameters_section" not in st.session_state:
+        st.session_state.show_parameters_section = True
+
+    if "show_section_wise_spindle_status_section" not in st.session_state:
+        st.session_state.show_section_wise_spindle_status_section = True
+
+    
