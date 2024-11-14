@@ -166,4 +166,5 @@ cython_debug/
 /__init__.py/
 Home copy.py
 
+# Maintain Credentials Secrecy
 secrets.toml

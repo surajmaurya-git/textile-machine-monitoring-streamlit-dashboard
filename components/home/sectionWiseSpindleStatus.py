@@ -33,7 +33,7 @@ def sectionWiseSpindleStatus_section():
             return ''  # For cells that don't match
 
         # Apply styling to the Spindle columns (ignoring 'Section Running Status')
-        styled_df = df.style.applymap(color_cells, subset=df.columns[1:]) # type: ignore
+        styled_df = df.style.map(color_cells, subset=df.columns[1:]) # type: ignore
 
         # Display the styled dataframe in Streamlit
         st.table(styled_df)

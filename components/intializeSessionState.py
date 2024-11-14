@@ -3,15 +3,15 @@ import streamlit as st
 def initializeSessionState():
     # Initialize the log in state if does not exist
     if "LoggedIn" not in st.session_state:
-        st.session_state.LoggedIn = False
+        st.session_state.LoggedIn = True
 
     # Initialize the Project setting in state if does not exist
-    if "Project" not in st.session_state:
-        st.session_state.Project = 0
+    if "Plant" not in st.session_state:
+        st.session_state.Plant = "Plant-1"
 
     # Initialize the Node setting in state if does not exist
-    if "Node" not in st.session_state:
-        st.session_state.Node = 1
+    if "Machine" not in st.session_state:
+        st.session_state.Machine = "Machine-1"
 
     # helper variable
     if "counter" not in st.session_state:

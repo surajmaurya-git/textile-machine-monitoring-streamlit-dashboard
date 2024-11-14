@@ -2,7 +2,7 @@
 
 import streamlit as st
 import pandas as pd
-
+import os
 import pytz
 from datetime import date, datetime, timedelta, time
 from streamlit_autorefresh import st_autorefresh
@@ -20,11 +20,6 @@ from components.intializeSessionState import initializeSessionState   # Initiali
 from components.home.parameters import parameters_section
 from components.home.sectionWiseSpindleStatus import sectionWiseSpindleStatus_section
 
-ANEDYA_CONNECTION_CREDENTIALS = (
-    # ("API KEY","NODE_ID Node 1""NODE_ID Node 2")   # Project
-    ("1301318d0ee2697668443a700c5b73416385ee59f9f9f1f8fb50ce781659fa57", "01932435-25f1-7f8e-9f29-ebb44f9bfd8c","019324e9-d054-7019-89c9-58c1dc2c7814"),  # Project 1
-)
-
 st.set_page_config(page_title="Anedya IoT Dashboard", layout="wide")
 
 refresh_interval = 30000
@@ -38,11 +33,18 @@ def V_SPACE(lines):
 def main():
     initializeSessionState()
 
+    # Manage Anedya Connection Credentials
+    API_KEY=st.secrets[st.session_state.Plant]["API_KEY"]
+    NODE_ID=st.secrets[st.session_state.Plant][st.session_state.Machine]
+
     # ---------------------- UI -----------------------
     if st.session_state.LoggedIn is False:
         drawLogin()
     else:
-        success = anedya_config(API_KEY=ANEDYA_CONNECTION_CREDENTIALS[st.session_state.Project][0],NODE_ID=ANEDYA_CONNECTION_CREDENTIALS[st.session_state.Project][st.session_state.Node])
+        success = anedya_config(API_KEY=API_KEY,NODE_ID=NODE_ID)
+        # API_KEY=st.secrets.anedya_connection_credentials.API_KEY
+        # NODE_ID=st.secrets.anedya_connection_credentials.NODE_ID
+        # success = anedya_config(API_KEY=API_KEY,NODE_ID=NODE_ID)
         if not success:
             st.stop()
         else:
@@ -80,7 +82,8 @@ def drawDashboard():
             st.session_state.device_status = "Offline"
 
     # ============ Update Parameters ===============
-    st.session_state.nominal_spindle_speed= 32.56
+    data=anedya_get_latestData("SPRPMNM")
+    st.session_state.nominal_spindle_speed= data[0]
     st.session_state.actual_spindle_speed= 12.78
     st.session_state.twist_per_inch= 5.6
     st.session_state.nominal_delivery_speed = 56.56
@@ -88,7 +91,7 @@ def drawDashboard():
     st.session_state.total_spindle_running_status = 9
     
     # Convert epoch time to datetime
-    epoch_time =datetime.now().timestamp()
+    epoch_time =data[1]
     indian_time_zone = pytz.timezone('Asia/Kolkata')
     unforamted_current_temp_data_datetime = datetime.fromtimestamp(epoch_time, indian_time_zone)
     st.session_state.last_updated_parameters_timestamps=unforamted_current_temp_data_datetime.strftime('%Y-%m-%d %H:%M:%S %Z')
@@ -107,6 +110,40 @@ def drawDashboard():
         st.session_state.LoggedIn = False
         st.rerun()
     st.markdown("This dashboard provides real-time insight of TFO Twisting Machine.")
+    
+    # -------------------Select Project and Machine -------------------------------------
+    param_selection_cols1 = st.columns(
+        [1, 1, 1, 0.5], gap="medium", vertical_alignment="center"
+    )
+    # Column 1
+    with param_selection_cols1[0]:
+        Plant = st.selectbox(
+            label="Select Plants",
+            placeholder="Select Plant",
+            options=["Plant-1"],
+            index=0,
+        )
+        if st.session_state.Plant != Plant:
+            st.session_state.Plant = Plant
+            st.rerun()
+    # Column 2
+    with param_selection_cols1[1]:
+        Machine = st.selectbox(
+            label="Select Machine",
+            options=["Machine-1"],
+            index=0,
+            placeholder="Select Machine",
+        )
+        if st.session_state.Machine !=Machine :
+            st.session_state.Machine = Machine
+            st.rerun()
+    # with param_selection_cols1[3]:
+    #     show_charts = st.toggle(
+    #         label="Show Charts",
+    #         key="show_charts",
+    #         value=st.session_state.show_charts,
+    #         label_visibility="visible",
+    #     )
 
     # =================== Parameters Section ===================
     parameters_section()
