@@ -55,7 +55,7 @@ def anedya_get_latestData(param_variable_identifier: str, plant=None, machine=No
         # print(response_message)
         data = json.loads(response_message).get("data")
         if not data:
-            print(f"No Data in Node : {nodeId} Var : {param_variable_identifier}")
+            print(f"No Data found")
             return[None,0]
         else:
             data=data[nodeId].get("value")
