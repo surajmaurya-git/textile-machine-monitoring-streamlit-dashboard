@@ -1,14 +1,11 @@
 """TFO Twisting Machine Monitoring Dashboard."""
 
 import streamlit as st
-import pandas as pd
-import os
 import pytz
 from datetime import date, datetime, timedelta, time
 from streamlit_autorefresh import st_autorefresh
 
 from utils.anedya import anedya_config
-from utils.anedya import anedya_sendCommand
 from utils.anedya import anedya_getValue
 from utils.anedya import anedya_setValue
 from utils.anedya import fetchHumidityData
@@ -84,10 +81,19 @@ def drawDashboard():
     # ============ Update Parameters ===============
     data=anedya_get_latestData("SPRPMNM")
     st.session_state.nominal_spindle_speed= data[0]
-    st.session_state.actual_spindle_speed= 12.78
-    st.session_state.twist_per_inch= 5.6
-    st.session_state.nominal_delivery_speed = 56.56
-    st.session_state.actual_delivery_speed = 89.45
+
+    data=anedya_get_latestData("SPRPMAC")
+    st.session_state.actual_spindle_speed= data[0]
+
+    data=anedya_get_latestData("TPI")
+    st.session_state.twist_per_inch= data[0]
+
+    data=anedya_get_latestData("DLRPMNM")
+    st.session_state.nominal_delivery_speed = data[0]
+
+    data=anedya_get_latestData("DLRPMAC")
+    st.session_state.actual_delivery_speed = data[0]
+
     st.session_state.total_spindle_running_status = 9
     
     # Convert epoch time to datetime
