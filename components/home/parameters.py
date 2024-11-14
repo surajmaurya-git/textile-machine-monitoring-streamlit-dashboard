@@ -9,7 +9,8 @@ def parameters_section():
         with org_subheading[0]:
             st.subheader(body="Parameters", anchor=False)
         with org_subheading[1]:
-            st.write(st.session_state.last_updated_parameters_timestamps)
+            if st.session_state.show_parameters_section :
+                st.write(st.session_state.last_updated_parameters_timestamps)
         if st.session_state.show_parameters_section :
             draw_gauge()
         else:
