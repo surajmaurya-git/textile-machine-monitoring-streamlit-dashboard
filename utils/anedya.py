@@ -117,13 +117,13 @@ def anedya_getDeviceStatus():
 
     response =http_session.request("POST", url, headers=headers, data=payload)
     responseMessage = response.text
-    print(responseMessage)
+
     errorCode = json.loads(responseMessage).get("errcode")
     if errorCode == 0:
         device_status = json.loads(responseMessage).get("data")[nodeId].get("online")
         value = [device_status, 1]
     else:
-        print(responseMessage)
+        # print(responseMessage)
         # st.write("No previous value!!")
         value = [False, -1]
 
