@@ -55,8 +55,8 @@ def anedya_get_latestData(param_variable_identifier: str, plant=None, machine=No
         # print(response_message)
         data = json.loads(response_message).get("data")
         if not data:
-            print(f"No Data in Node : {nodeId} Var : {param_variable_identifier}")
-            return[None,0]
+            print(f"No Data found")
+            return[None,None]
         else:
             data=data[nodeId].get("value")
             timestamp = json.loads(response_message).get("data")[nodeId].get("timestamp")
@@ -64,7 +64,7 @@ def anedya_get_latestData(param_variable_identifier: str, plant=None, machine=No
             return [data, timestamp]
     else:
         st.error("Get LatestData API failed")
-        return [0,0]
+        return [None,None]
 
 def anedya_getData(
     param_variable_identifier: str,
@@ -117,13 +117,13 @@ def anedya_getDeviceStatus():
 
     response =http_session.request("POST", url, headers=headers, data=payload)
     responseMessage = response.text
-    print(responseMessage)
+
     errorCode = json.loads(responseMessage).get("errcode")
     if errorCode == 0:
         device_status = json.loads(responseMessage).get("data")[nodeId].get("online")
         value = [device_status, 1]
     else:
-        print(responseMessage)
+        # print(responseMessage)
         # st.write("No previous value!!")
         value = [False, -1]
 

@@ -73,35 +73,37 @@ def drawDashboard():
 
     # ============ Update Parameters ===============
     data=anedya_get_latestData("SPRPMNM",st.session_state.Plant,st.session_state.Machine)
-    if not data[0]:
-        st.session_state.show_parameters_section = False
-    else:
+    print(data)
+    if data[0] is not None:
         st.session_state.nominal_spindle_speed= data[0]
         st.session_state.show_parameters_section = True
+    else:
+        print("check-1")
+        st.session_state.show_parameters_section = False
 
     data=anedya_get_latestData("SPRPMAC",st.session_state.Plant,st.session_state.Machine)
-    if data[0]:
+    if data[0] is not None:
         st.session_state.actual_spindle_speed= data[0]
         st.session_state.show_parameters_section = True
     else:
        st.session_state.show_parameters_section = False
 
     data=anedya_get_latestData("TPI",st.session_state.Plant,st.session_state.Machine)
-    if data[0]:
+    if data[0] is not None:
         st.session_state.twist_per_inch= data[0]
         st.session_state.show_parameters_section = True
     else:
         st.session_state.show_parameters_section = False
 
     data=anedya_get_latestData("DLRPMNM",st.session_state.Plant,st.session_state.Machine)
-    if data[0]:
+    if data[0] is not None:
         st.session_state.nominal_delivery_speed = data[0]
         st.session_state.show_parameters_section = True
     else:
         st.session_state.show_parameters_section = False
 
     data=anedya_get_latestData("DLRPMAC",st.session_state.Plant,st.session_state.Machine)
-    if data[0]:
+    if data[0] is not None:
         st.session_state.actual_delivery_speed = data[0]
         st.session_state.show_parameters_section = True
     else:
@@ -112,6 +114,7 @@ def drawDashboard():
     st.session_state.total_spindle_running_status = spindle_run_status[0]
     
     # Convert epoch time to datetime
+    print(data[1])
     epoch_time =data[1]
     indian_time_zone = pytz.timezone('Asia/Kolkata')
     unforamted_current_temp_data_datetime = datetime.fromtimestamp(epoch_time, indian_time_zone)
@@ -157,7 +160,7 @@ def drawDashboard():
     with param_selection_cols1[1]:
         Machine = st.selectbox(
             label="Select Machine",
-            options=["Machine-1","Machine-2"],
+            options=["Machine-1"],
             key="machines",
             index=st.session_state.machine_selectbox_index,           
             placeholder="Select Machine",

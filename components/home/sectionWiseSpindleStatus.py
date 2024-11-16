@@ -24,7 +24,6 @@ def sectionWiseSpindleStatus_section():
             'Spindle -8': [spindle_health_status[0][7], spindle_health_status[1][7]],
             'Spindle -9': [spindle_health_status[0][8], spindle_health_status[1][8]],
             'Spindle -10': [spindle_health_status[0][9], spindle_health_status[1][9]],
-            'Spindle -11': [spindle_health_status[0][10], spindle_health_status[1][10]]
             }
 
         df = pd.DataFrame(data=d, index=["Section-1", "Section-2"])
