@@ -54,7 +54,7 @@ def anedya_get_latestData(param_variable_identifier: str, plant=None, machine=No
     if response.status_code==200:
         # print(response_message)
         data = json.loads(response_message).get("data")
-        if not data:
+        if data=={} or data==None:
             print(f"No Data found")
             return[None,None]
         else:

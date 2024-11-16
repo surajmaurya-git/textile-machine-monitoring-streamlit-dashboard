@@ -73,12 +73,10 @@ def drawDashboard():
 
     # ============ Update Parameters ===============
     data=anedya_get_latestData("SPRPMNM",st.session_state.Plant,st.session_state.Machine)
-    print(data)
     if data[0] is not None:
         st.session_state.nominal_spindle_speed= data[0]
         st.session_state.show_parameters_section = True
     else:
-        print("check-1")
         st.session_state.show_parameters_section = False
 
     data=anedya_get_latestData("SPRPMAC",st.session_state.Plant,st.session_state.Machine)
