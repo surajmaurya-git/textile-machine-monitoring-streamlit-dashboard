@@ -56,7 +56,7 @@ def anedya_get_latestData(param_variable_identifier: str, plant=None, machine=No
         data = json.loads(response_message).get("data")
         if not data:
             print(f"No Data found")
-            return[None,0]
+            return[None,None]
         else:
             data=data[nodeId].get("value")
             timestamp = json.loads(response_message).get("data")[nodeId].get("timestamp")
@@ -64,7 +64,7 @@ def anedya_get_latestData(param_variable_identifier: str, plant=None, machine=No
             return [data, timestamp]
     else:
         st.error("Get LatestData API failed")
-        return [0,0]
+        return [None,None]
 
 def anedya_getData(
     param_variable_identifier: str,
