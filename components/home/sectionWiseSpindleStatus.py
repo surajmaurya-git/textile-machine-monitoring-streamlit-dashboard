@@ -30,7 +30,13 @@ def sectionWiseSpindleStatus_section():
 
         # Function to color the "Healthy" or "Faulty" cells
         def color_cells(val):
-            if val == "Healthy":
+            if val.find("%") != -1:
+                value=int(val.split(".")[0])
+                if value<100:
+                    return 'background-color: #E33025'
+                elif value==100:
+                    return 'background-color: #00CC00'
+            elif val == "Healthy":
                 return 'background-color:  #00CC00'
             elif val == "Faulty":
                 return 'background-color: #E33025'
@@ -38,7 +44,7 @@ def sectionWiseSpindleStatus_section():
             return ''  # For cells that don't match
 
         # Apply styling to the Spindle columns (ignoring 'Section Running Status')
-        styled_df = df.style.map(color_cells, subset=df.columns[1:]) # type: ignore
+        styled_df = df.style.map(color_cells, subset=df.columns[0:]) # type: ignore
 
         # Display the styled dataframe in Streamlit
         st.table(styled_df)
