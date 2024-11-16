@@ -73,12 +73,10 @@ def drawDashboard():
 
     # ============ Update Parameters ===============
     data=anedya_get_latestData("SPRPMNM",st.session_state.Plant,st.session_state.Machine)
-    print(data)
     if data[0] is not None:
         st.session_state.nominal_spindle_speed= data[0]
         st.session_state.show_parameters_section = True
     else:
-        print("check-1")
         st.session_state.show_parameters_section = False
 
     data=anedya_get_latestData("SPRPMAC",st.session_state.Plant,st.session_state.Machine)
@@ -114,11 +112,11 @@ def drawDashboard():
     st.session_state.total_spindle_running_status = spindle_run_status[0]
     
     # Convert epoch time to datetime
-    print(data[1])
-    epoch_time =data[1]
-    indian_time_zone = pytz.timezone('Asia/Kolkata')
-    unforamted_current_temp_data_datetime = datetime.fromtimestamp(epoch_time, indian_time_zone)
-    st.session_state.last_updated_parameters_timestamps=unforamted_current_temp_data_datetime.strftime('%Y-%m-%d %H:%M:%S %Z')
+    if data[1] is not None:
+        epoch_time =data[1]
+        indian_time_zone = pytz.timezone('Asia/Kolkata')
+        unforamted_current_temp_data_datetime = datetime.fromtimestamp(epoch_time, indian_time_zone)
+        st.session_state.last_updated_parameters_timestamps=unforamted_current_temp_data_datetime.strftime('%Y-%m-%d %H:%M:%S %Z')
 
     headercols = st.columns([1, 0.1, 0.1, 0.1], gap="small")
     with headercols[0]:
@@ -160,7 +158,7 @@ def drawDashboard():
     with param_selection_cols1[1]:
         Machine = st.selectbox(
             label="Select Machine",
-            options=["Machine-1"],
+            options=["Machine-1","Machine-2"],
             key="machines",
             index=st.session_state.machine_selectbox_index,           
             placeholder="Select Machine",
