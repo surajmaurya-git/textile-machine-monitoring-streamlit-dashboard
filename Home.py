@@ -112,7 +112,7 @@ def drawDashboard():
     with param_selection_cols1[1]:
         Machine = st.selectbox(
             label="Select Machine",
-            options=["Machine-1","Machine-2"],
+            options=["Machine-1"],
             key="machines",
             index=st.session_state.machine_selectbox_index,           
             placeholder="Select Machine",
@@ -189,9 +189,9 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
 
     #-------------------- Section - 1 -------------------------------------------------
     # Retrieve data for Slave 1
-    slave_1_data_list = [anedya_get_latestData(f"S1DI{i}",st.session_state.Plant,st.session_state.Machine) for i in range(1, 12)]
+    slave_1_data_list = [anedya_get_latestData(f"S1DI{i}",st.session_state.Plant,st.session_state.Machine) for i in range(1, 11)]
     slave_1_assign_health_status_list = []
-    for i in range(1, 12):
+    for i in range(1, 11):
         if st.session_state.device_status=="Online":
             if slave_1_data_list[i-1][0]:
                 slave_1_assign_health_status_list.append("Healthy")
@@ -201,16 +201,15 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
             slave_1_assign_health_status_list.append("offline")
 
     # Calculate Slave 1 spindle running status
-    slave_1_spindle_running_status = sum(1 for x in slave_1_assign_health_status_list if x == "Healthy")
-    slave_1_total_spindles = len(slave_1_data_list)-1
-    st.session_state.slave_1_spindles_running_status_percentage = f"{(slave_1_spindle_running_status / slave_1_total_spindles) * 100:.2f}%"
+    slave_1_spindle_running_status = anedya_get_latestData("S1DI11",st.session_state.Plant,st.session_state.Machine)[0]
+    st.session_state.slave_1_spindles_running_status_percentage = f"{(slave_1_spindle_running_status):.2f}%"
 
 
     # -------------------- Section - 2 -------------------------------------------------
     # Retrieve data for Slave 2
-    slave_2_data_list = [anedya_get_latestData(f"S2DI{i}",st.session_state.Plant,st.session_state.Machine) for i in range(1, 12)]
+    slave_2_data_list = [anedya_get_latestData(f"S2DI{i}",st.session_state.Plant,st.session_state.Machine) for i in range(1, 11)]
     slave_2_assign_health_status_list = []
-    for i in range(1, 12):
+    for i in range(1, 11):
         if st.session_state.device_status=="Online":
             if slave_2_data_list[i-1][0]:
                 slave_2_assign_health_status_list.append("Healthy")
@@ -220,12 +219,13 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
             slave_2_assign_health_status_list.append("offline")
 
     # Calculate Slave 2 spindle running status
-    slave_2_spindle_running_status = sum(1 for x in slave_2_assign_health_status_list if x == "Healthy")
-    slave_2_total_spindles = len(slave_2_data_list)-1
-    st.session_state.slave_2_spindles_running_status_percentage = f"{(slave_2_spindle_running_status / slave_2_total_spindles) * 100:.2f}%"
+    slave_2_spindle_running_status =anedya_get_latestData("S2DI11",st.session_state.Plant,st.session_state.Machine)[0]
+    
+    # st.session_state.slave_2_spindles_running_status_percentage = "100.00%"
+    st.session_state.slave_2_spindles_running_status_percentage = f"{(slave_2_spindle_running_status):.2f}%"
 
     # Total spindle running status
-    total_spindles_running_status = slave_1_spindle_running_status + slave_2_spindle_running_status
+    total_spindles_running_status = (slave_1_spindle_running_status + slave_2_spindle_running_status)/10
     
     st.session_state.spindle_health_status = [slave_1_assign_health_status_list,slave_2_assign_health_status_list]
 

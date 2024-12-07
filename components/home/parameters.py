@@ -24,14 +24,12 @@ def draw_gauge():
             gVal=st.session_state.nominal_spindle_speed,
             gTitle="Nominal Spindle Speed",
             gMode="gauge+number",
+            grLow=30000,
+            gcLow="#1cf342",
             gSize="MED",
-            grLow=4,
-            gcLow="blue",
-            grMid=9,
-            gcMid="green",
-            gcHigh="red",
             arBot=0,
-            arTop=12,
+            arTop=(
+                st.session_state.actual_spindle_speed+50),
             sFix="RPM",
         )
     with cols1[1]:
@@ -40,30 +38,20 @@ def draw_gauge():
             gTitle="Actual Spindle Speed",
             gMode="gauge+number",
             gSize="MED",
-            grLow=0.4,
-            gcLow="green",
-            grMid=0.6 ,
-            gcMid="orange",
-            gcHigh="red",
+            grLow=30000,
+            gcLow="#1cf342",
             sFix="RPM",
             arBot=0,
-            arTop=1,
+            arTop=(
+                st.session_state.actual_spindle_speed+50),
             cWidth=True,
         )
     with cols1[2]:
         streamviz.gauge(
             gVal=st.session_state.twist_per_inch,
             gTitle="Twist Per Inch(TPI)",
-            gMode="gauge+number",
+            gMode="number",
             gSize="MED",
-            grLow=0.6,
-            gcLow="red",
-            grMid=1.2,
-            gcMid="green",
-            gcHigh="red",
-            sFix="RPM",
-            arBot=0,
-            arTop=2,
             cWidth=True,
         )
     # Column 2
@@ -74,14 +62,12 @@ def draw_gauge():
             gTitle="Nominal Delivery Speed",
             gMode="gauge+number",
             gSize="MED",
-            grLow=2,
-            gcLow="green",
-            grMid=3,
-            gcMid="orange",
-            gcHigh="red",
+            grLow=1000,
+            gcLow="#1cf342",
             sFix="RPM",
             arBot=0,
-            arTop=5,
+            arTop=(
+                st.session_state.actual_delivery_speed+10),
             cWidth=True,
         )
     with cols2[1]:
@@ -90,14 +76,12 @@ def draw_gauge():
             gTitle="Actual Delivery Speed",
             gMode="gauge+number",
             gSize="MED",
-            grLow=0.4,
-            gcLow="green",
-            grMid=0.7,
-            gcMid="orange",
-            gcHigh="red",
+            grLow=1000,
+            gcLow="#1cf342",
             sFix="RPM",
             arBot=0,
-            arTop=1,
+            arTop=(
+                st.session_state.actual_delivery_speed+10),
             cWidth=True,
         )
     with cols2[2]:
