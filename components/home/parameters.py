@@ -67,7 +67,7 @@ def draw_gauge():
             sFix="RPM",
             arBot=0,
             arTop=(
-                st.session_state.actual_delivery_speed+10),
+                st.session_state.actual_delivery_speed+50),
             cWidth=True,
         )
     with cols2[1]:
@@ -81,7 +81,7 @@ def draw_gauge():
             sFix="RPM",
             arBot=0,
             arTop=(
-                st.session_state.actual_delivery_speed+10),
+                st.session_state.actual_delivery_speed+50),
             cWidth=True,
         )
     with cols2[2]:
