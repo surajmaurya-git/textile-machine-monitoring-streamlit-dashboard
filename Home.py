@@ -193,7 +193,7 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
     slave_1_assign_health_status_list = []
     for i in range(1, 11):
         # if st.session_state.device_status=="Online":
-        if slave_1_data_list[i-1][0]:
+        if not slave_1_data_list[i-1][0]:
             slave_1_assign_health_status_list.append("Healthy")
         else:
             slave_1_assign_health_status_list.append("Faulty")
@@ -202,7 +202,7 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
 
     # Calculate Slave 1 spindle running status
     slave_1_spindle_running_status = anedya_get_latestData("S1DI11",st.session_state.Plant,st.session_state.Machine)[0]
-    st.session_state.slave_1_spindles_running_status_percentage = f"{(slave_1_spindle_running_status):.2f}%"
+    st.session_state.slave_1_spindles_running_status_percentage = f"{(100-slave_1_spindle_running_status):.2f}%"
 
 
     # -------------------- Section - 2 -------------------------------------------------
@@ -211,7 +211,7 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
     slave_2_assign_health_status_list = []
     for i in range(1, 11):
         # if st.session_state.device_status=="Online":
-        if slave_2_data_list[i-1][0]:
+        if not slave_2_data_list[i-1][0]:
             slave_2_assign_health_status_list.append("Healthy")
         else:
             slave_2_assign_health_status_list.append("Faulty")
@@ -222,10 +222,10 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
     slave_2_spindle_running_status =anedya_get_latestData("S2DI11",st.session_state.Plant,st.session_state.Machine)[0]
     
     # st.session_state.slave_2_spindles_running_status_percentage = "100.00%"
-    st.session_state.slave_2_spindles_running_status_percentage = f"{(slave_2_spindle_running_status):.2f}%"
+    st.session_state.slave_2_spindles_running_status_percentage = f"{(100-slave_2_spindle_running_status):.2f}%"
 
     # Total spindle running status
-    total_spindles_running_status = (slave_1_spindle_running_status + slave_2_spindle_running_status)/10
+    total_spindles_running_status = ((100-slave_1_spindle_running_status) + (100-slave_2_spindle_running_status))/10
     
     st.session_state.spindle_health_status = [slave_1_assign_health_status_list,slave_2_assign_health_status_list]
 
