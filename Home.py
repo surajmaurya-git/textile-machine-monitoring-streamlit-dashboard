@@ -192,13 +192,13 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
     slave_1_data_list = [anedya_get_latestData(f"S1DI{i}",st.session_state.Plant,st.session_state.Machine) for i in range(1, 11)]
     slave_1_assign_health_status_list = []
     for i in range(1, 11):
-        if st.session_state.device_status=="Online":
-            if slave_1_data_list[i-1][0]:
-                slave_1_assign_health_status_list.append("Healthy")
-            else:
-                slave_1_assign_health_status_list.append("Faulty")
+        # if st.session_state.device_status=="Online":
+        if slave_1_data_list[i-1][0]:
+            slave_1_assign_health_status_list.append("Healthy")
         else:
-            slave_1_assign_health_status_list.append("offline")
+            slave_1_assign_health_status_list.append("Faulty")
+        # else:
+            # slave_1_assign_health_status_list.append("offline")
 
     # Calculate Slave 1 spindle running status
     slave_1_spindle_running_status = anedya_get_latestData("S1DI11",st.session_state.Plant,st.session_state.Machine)[0]
@@ -210,13 +210,13 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
     slave_2_data_list = [anedya_get_latestData(f"S2DI{i}",st.session_state.Plant,st.session_state.Machine) for i in range(1, 11)]
     slave_2_assign_health_status_list = []
     for i in range(1, 11):
-        if st.session_state.device_status=="Online":
-            if slave_2_data_list[i-1][0]:
-                slave_2_assign_health_status_list.append("Healthy")
-            else:
-                slave_2_assign_health_status_list.append("Faulty")
+        # if st.session_state.device_status=="Online":
+        if slave_2_data_list[i-1][0]:
+            slave_2_assign_health_status_list.append("Healthy")
         else:
-            slave_2_assign_health_status_list.append("offline")
+            slave_2_assign_health_status_list.append("Faulty")
+        # else:
+            # slave_2_assign_health_status_list.append("offline")
 
     # Calculate Slave 2 spindle running status
     slave_2_spindle_running_status =anedya_get_latestData("S2DI11",st.session_state.Plant,st.session_state.Machine)[0]
