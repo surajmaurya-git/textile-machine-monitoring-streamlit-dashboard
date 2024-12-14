@@ -30,6 +30,39 @@ def main():
     API_KEY=st.secrets[st.session_state.Plant]["API_KEY"]
     NODE_ID=st.secrets[st.session_state.Plant][st.session_state.Machine]
 
+    hide_streamlit_style = """
+            <style>
+            # div[data-testid="stToolbar"] {
+            # visibility: hidden;
+            # height: 0%;
+            # position: fixed;
+            # }
+            # div[data-testid="stDecoration"] {
+            # visibility: hidden;
+            # height: 0%;
+            # position: fixed;
+            # }
+            div[data-testid="stStatusWidget"] {
+            visibility: hidden;
+            height: 0%;
+            position: fixed;
+            }
+            # #MainMenu {
+            # visibility: hidden;
+            # height: 0%;
+            # # }
+            # header {
+            # visibility: hidden;
+            # height: 0%;
+            # }
+            # footer {
+            # visibility: hidden;
+            # height: 0%;
+            # }
+            </style>
+            """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
     # ---------------------- UI -----------------------
     if st.session_state.LoggedIn is False:
         drawLogin()
