@@ -35,7 +35,7 @@ def anedya_config(NODE_ID, API_KEY) -> bool:
         return False
 
 
-@st.cache_data(ttl=15, show_spinner=False)
+@st.cache_data(ttl=9, show_spinner=False)
 def anedya_get_latestData(param_variable_identifier: str, plant=None, machine=None) -> list:
 
     url = "https://api.anedya.io/v1/data/latest"
@@ -103,7 +103,7 @@ def anedya_getData(
     return [response_message, res_code]
 
 
-@st.cache_data(ttl=50, show_spinner=False)
+@st.cache_data(ttl=40, show_spinner=False)
 def anedya_getDeviceStatus():
     url = "https://api.anedya.io/v1/health/status"
     apiKey_in_formate = "Bearer " + apiKey

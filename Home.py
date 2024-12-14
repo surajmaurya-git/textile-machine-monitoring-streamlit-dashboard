@@ -15,7 +15,7 @@ from components.home.sectionWiseSpindleStatus import sectionWiseSpindleStatus_se
 
 st.set_page_config(page_title="Anedya IoT Dashboard", layout="wide")
 
-refresh_interval = 30000
+refresh_interval = 10000
 st_autorefresh(interval=refresh_interval, limit=None, key="auto-refresh-handler")
 
 # --------------- HELPER FUNCTIONS -----------------------
