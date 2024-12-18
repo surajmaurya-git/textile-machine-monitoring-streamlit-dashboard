@@ -15,7 +15,7 @@ from components.home.sectionWiseSpindleStatus import sectionWiseSpindleStatus_se
 
 st.set_page_config(page_title="Anedya IoT Dashboard", layout="wide")
 
-refresh_interval = 10000
+refresh_interval = 30000
 st_autorefresh(interval=refresh_interval, limit=None, key="auto-refresh-handler")
 
 # --------------- HELPER FUNCTIONS -----------------------
@@ -61,6 +61,7 @@ def main():
             # }
             </style>
             """
+
     st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
     # ---------------------- UI -----------------------
@@ -72,8 +73,6 @@ def main():
             st.stop()
         else:
             drawDashboard()
-
-
 
 def drawLogin():
     cols = st.columns([1, 1, 1], gap="small")
@@ -157,6 +156,7 @@ def drawDashboard():
             st.session_state.machine_selectbox_index=index-1
             st.session_state.spindle_health_status=None
             st.rerun()
+
     # with param_selection_cols1[3]:
     #     show_charts = st.toggle(
     #         label="Show Charts",
@@ -263,7 +263,5 @@ def spindle_running_status(Plant=None,Machine=None) -> list:
     st.session_state.spindle_health_status = [slave_1_assign_health_status_list,slave_2_assign_health_status_list]
 
     return [total_spindles_running_status]
-
-
 if __name__ == "__main__":
     main()
